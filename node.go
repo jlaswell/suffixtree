@@ -95,7 +95,7 @@ func (n *Node) contains(index int) bool {
 func (n *Node) addEdge(r rune, e *Edge) {
 	if idx := n.search(r); idx == -1 {
 		n.Edges = append(n.Edges, e)
-		sort.Slice(n.Edges, func(i, j int) bool { return n.Edges[i].label[0] < n.Edges[j].label[0] })
+		sort.Slice(n.Edges, func(i, j int) bool { return n.Edges[i].Label[0] < n.Edges[j].Label[0] })
 	} else {
 		n.Edges[idx] = e
 	}
@@ -111,8 +111,8 @@ func (n *Node) getEdge(r rune) *Edge {
 }
 
 func (n *Node) search(r rune) int {
-	idx := sort.Search(len(n.Edges), func(i int) bool { return n.Edges[i].label[0] >= r })
-	if idx < len(n.Edges) && n.Edges[idx].label[0] == r {
+	idx := sort.Search(len(n.Edges), func(i int) bool { return n.Edges[i].Label[0] >= r })
+	if idx < len(n.Edges) && n.Edges[idx].Label[0] == r {
 		return idx
 	}
 
