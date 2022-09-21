@@ -39,7 +39,7 @@ func (t *GeneralizedSuffixTree) searchNode(word string) *Node {
 			// there is no edge starting with this rune
 			return nil
 		} else {
-			label := string(currentEdge.label)
+			label := string(currentEdge.Label)
 			lenToMatch := len(word) - i
 			if lenToMatch > len(label) {
 				lenToMatch = len(label)
@@ -181,8 +181,8 @@ func (t *GeneralizedSuffixTree) canonize(s *Node, runes []rune) (*Node, []rune) 
 	if len(runes) > 0 {
 		g := s.getEdge(runes[0])
 		// descend the tree as long as a proper label is found
-		for g != nil && strings.Index(string(runes), string(g.label)) == 0 {
-			runes = runes[len(g.label):]
+		for g != nil && strings.Index(string(runes), string(g.Label)) == 0 {
+			runes = runes[len(g.Label):]
 			currentNode = g.Node
 			if len(runes) > 0 {
 				g = currentNode.getEdge(runes[0])
@@ -220,11 +220,11 @@ func (t *GeneralizedSuffixTree) testAndSplit(inputs *Node, stringPart []rune, r 
 		g := s.getEdge(str[0])
 
 		// must see whether "str" is substring of the label of an edge
-		if len(g.label) > len(str) && g.label[len(str)] == r {
+		if len(g.Label) > len(str) && g.Label[len(str)] == r {
 			return true, s
 		} else {
 			// need to split the edge
-			newlabel := g.label[len(str):]
+			newlabel := g.Label[len(str):]
 
 			// build a new node
 			w := newNode()
@@ -233,7 +233,7 @@ func (t *GeneralizedSuffixTree) testAndSplit(inputs *Node, stringPart []rune, r 
 			s.addEdge(str[0], newedge)
 
 			// link s -> r
-			g.label = newlabel
+			g.Label = newlabel
 			w.addEdge(newlabel[0], g)
 
 			return false, w
@@ -244,21 +244,21 @@ func (t *GeneralizedSuffixTree) testAndSplit(inputs *Node, stringPart []rune, r 
 			// if there is no t-transtion from s
 			return false, s
 		} else {
-			if string(remainder) == string(e.label) {
+			if string(remainder) == string(e.Label) {
 				// update payload of destination node
 				e.Node.addRef(value)
 				return true, s
-			} else if strings.Index(string(remainder), string(e.label)) == 0 {
+			} else if strings.Index(string(remainder), string(e.Label)) == 0 {
 				return true, s
-			} else if strings.Index(string(e.label), string(remainder)) == 0 {
+			} else if strings.Index(string(e.Label), string(remainder)) == 0 {
 				// need to split as above
 				newNode := newNode()
 				newNode.addRef(value)
 				newEdge := newEdge(remainder, newNode)
 				s.addEdge(r, newEdge)
 
-				e.label = e.label[len(remainder):]
-				newNode.addEdge(e.label[0], e)
+				e.Label = e.Label[len(remainder):]
+				newNode.addEdge(e.Label[0], e)
 				return false, s
 			} else {
 				// they are different words. No prefix. but they may still share some common substr
