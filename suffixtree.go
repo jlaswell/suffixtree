@@ -7,7 +7,7 @@ import (
 )
 
 type GeneralizedSuffixTree struct {
-	root       *node //The root of the suffix tree
+	Root       *node //The root of the suffix tree
 	activeLeaf *node //The last leaf that was added during the update operation
 }
 
