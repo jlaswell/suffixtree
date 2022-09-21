@@ -29,7 +29,7 @@ func (t *GeneralizedSuffixTree) searchNode(word string) *Node {
 	 * If such a path is found, the last node on it is returned.
 	 */
 	var currentNode *Node = t.Root
-	var currentEdge *Node
+	var currentEdge *Edge
 	var i int
 
 	for i < len(word) {
@@ -83,8 +83,8 @@ func (t *GeneralizedSuffixTree) Put(key string, index int) {
 	}
 
 	// add leaf suffix link, is necessary
-	if t.activeLeaf.suffix == nil && t.activeLeaf != t.Root && t.activeLeaf != s {
-		t.activeLeaf.suffix = s
+	if t.activeLeaf.Suffix == nil && t.activeLeaf != t.Root && t.activeLeaf != s {
+		t.activeLeaf.Suffix = s
 	}
 }
 
@@ -134,24 +134,24 @@ func (t *GeneralizedSuffixTree) update(inputNode *Node, stringPart []rune, rest 
 
 		// update suffix link for newly created leaf
 		if t.activeLeaf != t.Root {
-			t.activeLeaf.suffix = leaf
+			t.activeLeaf.Suffix = leaf
 		}
 		t.activeLeaf = leaf
 
 		// line 4
 		if oldroot != t.Root {
-			oldroot.suffix = r
+			oldroot.Suffix = r
 		}
 
 		// line 5
 		oldroot = r
 
 		// line 6
-		if s.suffix == nil { // root node
+		if s.Suffix == nil { // root node
 			// this is a special case to handle what is referred to as node _|_ on the paper
 			runes = runes[1:]
 		} else {
-			n, b := t.canonize(s.suffix, safeCutLastChar(runes))
+			n, b := t.canonize(s.Suffix, safeCutLastChar(runes))
 			s = n
 			// use intern to ensure that runes is a reference from the string pool
 			runes = append(b, runes[len(runes)-1])
@@ -163,7 +163,7 @@ func (t *GeneralizedSuffixTree) update(inputNode *Node, stringPart []rune, rest 
 
 	// line 8
 	if oldroot != t.Root {
-		oldroot.suffix = r
+		oldroot.Suffix = r
 	}
 
 	return
@@ -176,7 +176,6 @@ func (t *GeneralizedSuffixTree) update(inputNode *Node, stringPart []rune, rest 
  * appended to the concatenation of labels from s to n to get inpustr.
  */
 func (t *GeneralizedSuffixTree) canonize(s *Node, runes []rune) (*Node, []rune) {
-
 	currentNode := s
 	if len(runes) > 0 {
 		g := s.getEdge(runes[0])
