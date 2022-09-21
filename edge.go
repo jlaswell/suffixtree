@@ -1,10 +1,10 @@
 package suffixtree
 
-type edge struct {
-	label []rune
-	*node
+type Edge struct {
+	Label []rune
+	*Node
 }
 
-func newEdge(label []rune, node *node) *edge {
-	return &edge{label: label, node: node}
+func newEdge(label []rune, node *Node) *Edge {
+	return &Edge{Label: label, Node: node}
 }
