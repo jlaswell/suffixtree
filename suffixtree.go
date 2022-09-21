@@ -28,7 +28,7 @@ func (t *GeneralizedSuffixTree) searchNode(word string) *node {
 	 * of all the labels on the path is a superstring of the given word.
 	 * If such a path is found, the last node on it is returned.
 	 */
-	var currentNode *node = t.root
+	var currentNode *node = t.Root
 	var currentEdge *edge
 	var i int
 
@@ -65,8 +65,8 @@ func (t *GeneralizedSuffixTree) searchNode(word string) *node {
 // Put adds the specified index to the GST under the given key.
 func (t *GeneralizedSuffixTree) Put(key string, index int) {
 	// reset activeLeaf
-	t.activeLeaf = t.root
-	s := t.root
+	t.activeLeaf = t.Root
+	s := t.Root
 	runes := []rune(key)
 
 	// proceed with tree construction (closely related to procedure in
@@ -83,7 +83,7 @@ func (t *GeneralizedSuffixTree) Put(key string, index int) {
 	}
 
 	// add leaf suffix link, is necessary
-	if t.activeLeaf.suffix == nil && t.activeLeaf != t.root && t.activeLeaf != s {
+	if t.activeLeaf.suffix == nil && t.activeLeaf != t.Root && t.activeLeaf != s {
 		t.activeLeaf.suffix = s
 	}
 }
@@ -110,7 +110,7 @@ func (t *GeneralizedSuffixTree) update(inputNode *node, stringPart []rune, rest 
 	newRune := stringPart[len(stringPart)-1]
 
 	// line 1
-	oldroot := t.root
+	oldroot := t.Root
 
 	// line 1b
 	endpoint, r := t.testAndSplit(s, stringPart[:len(stringPart)-1], newRune, rest, value)
@@ -133,13 +133,13 @@ func (t *GeneralizedSuffixTree) update(inputNode *node, stringPart []rune, rest 
 		}
 
 		// update suffix link for newly created leaf
-		if t.activeLeaf != t.root {
+		if t.activeLeaf != t.Root {
 			t.activeLeaf.suffix = leaf
 		}
 		t.activeLeaf = leaf
 
 		// line 4
-		if oldroot != t.root {
+		if oldroot != t.Root {
 			oldroot.suffix = r
 		}
 
@@ -162,7 +162,7 @@ func (t *GeneralizedSuffixTree) update(inputNode *node, stringPart []rune, rest 
 	}
 
 	// line 8
-	if oldroot != t.root {
+	if oldroot != t.Root {
 		oldroot.suffix = r
 	}
 
@@ -278,7 +278,7 @@ func safeCutLastChar(runes []rune) []rune {
 
 func NewGeneralizedSuffixTree() *GeneralizedSuffixTree {
 	t := &GeneralizedSuffixTree{}
-	t.root = newNode()
-	t.activeLeaf = t.root
+	t.Root = newNode()
+	t.activeLeaf = t.Root
 	return t
 }
