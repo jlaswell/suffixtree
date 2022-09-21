@@ -7,8 +7,8 @@ import (
 )
 
 type GeneralizedSuffixTree struct {
-	Root       *node //The root of the suffix tree
-	activeLeaf *node //The last leaf that was added during the update operation
+	Root       *Node //The root of the suffix tree
+	activeLeaf *Node //The last leaf that was added during the update operation
 }
 
 // Search search for the given word within the GST and returns at most the given number of matches.
@@ -22,14 +22,14 @@ func (t *GeneralizedSuffixTree) Search(word string, numElements int) []int {
 }
 
 // searchNode returns the tree node (if present) that corresponds to the given string.
-func (t *GeneralizedSuffixTree) searchNode(word string) *node {
+func (t *GeneralizedSuffixTree) searchNode(word string) *Node {
 	/*
 	 * Verifies if exists a path from the root to a node such that the concatenation
 	 * of all the labels on the path is a superstring of the given word.
 	 * If such a path is found, the last node on it is returned.
 	 */
-	var currentNode *node = t.Root
-	var currentEdge *edge
+	var currentNode *Node = t.Root
+	var currentEdge *Node
 	var i int
 
 	for i < len(word) {
@@ -50,10 +50,10 @@ func (t *GeneralizedSuffixTree) searchNode(word string) *node {
 			}
 
 			if len(label) >= len(word)-i {
-				return currentEdge.node
+				return currentEdge.Node
 			} else {
 				// advance to next node
-				currentNode = currentEdge.node
+				currentNode = currentEdge.Node
 				i += lenToMatch
 			}
 		}
@@ -104,7 +104,7 @@ func (t *GeneralizedSuffixTree) Put(key string, index int) {
  * @param rest the rest of the string
  * @param value the value to add to the index
  */
-func (t *GeneralizedSuffixTree) update(inputNode *node, stringPart []rune, rest []rune, value int) (s *node, runes []rune) {
+func (t *GeneralizedSuffixTree) update(inputNode *Node, stringPart []rune, rest []rune, value int) (s *Node, runes []rune) {
 	s = inputNode
 	runes = stringPart
 	newRune := stringPart[len(stringPart)-1]
@@ -115,7 +115,7 @@ func (t *GeneralizedSuffixTree) update(inputNode *node, stringPart []rune, rest 
 	// line 1b
 	endpoint, r := t.testAndSplit(s, stringPart[:len(stringPart)-1], newRune, rest, value)
 
-	var leaf *node
+	var leaf *Node
 	// line 2
 	for !endpoint {
 		// line 3
@@ -123,7 +123,7 @@ func (t *GeneralizedSuffixTree) update(inputNode *node, stringPart []rune, rest 
 		if tempEdge != nil {
 			// such a node is already present. This is one of the main differences from Ukkonen's case:
 			// the tree can contain deeper nodes at this stage because different strings were added by previous iterations.
-			leaf = tempEdge.node
+			leaf = tempEdge.Node
 		} else {
 			// must build a new leaf
 			leaf = newNode()
@@ -175,7 +175,7 @@ func (t *GeneralizedSuffixTree) update(inputNode *node, stringPart []rune, rest 
  * a prefix of inputstr and remainder will be string that must be
  * appended to the concatenation of labels from s to n to get inpustr.
  */
-func (t *GeneralizedSuffixTree) canonize(s *node, runes []rune) (*node, []rune) {
+func (t *GeneralizedSuffixTree) canonize(s *Node, runes []rune) (*Node, []rune) {
 
 	currentNode := s
 	if len(runes) > 0 {
@@ -183,7 +183,7 @@ func (t *GeneralizedSuffixTree) canonize(s *node, runes []rune) (*node, []rune) 
 		// descend the tree as long as a proper label is found
 		for g != nil && strings.Index(string(runes), string(g.label)) == 0 {
 			runes = runes[len(g.label):]
-			currentNode = g.node
+			currentNode = g.Node
 			if len(runes) > 0 {
 				g = currentNode.getEdge(runes[0])
 			}
@@ -212,7 +212,7 @@ func (t *GeneralizedSuffixTree) canonize(s *node, runes []rune) (*node, []rune) 
  *                  the last node that can be reached by following the path denoted by stringPart starting from inputs
  *
  */
-func (t *GeneralizedSuffixTree) testAndSplit(inputs *node, stringPart []rune, r rune, remainder []rune, value int) (bool, *node) {
+func (t *GeneralizedSuffixTree) testAndSplit(inputs *Node, stringPart []rune, r rune, remainder []rune, value int) (bool, *Node) {
 	// descend the tree as far as possible
 	s, str := t.canonize(inputs, stringPart)
 
@@ -246,7 +246,7 @@ func (t *GeneralizedSuffixTree) testAndSplit(inputs *node, stringPart []rune, r 
 		} else {
 			if string(remainder) == string(e.label) {
 				// update payload of destination node
-				e.node.addRef(value)
+				e.Node.addRef(value)
 				return true, s
 			} else if strings.Index(string(remainder), string(e.label)) == 0 {
 				return true, s
