@@ -4,22 +4,22 @@ import (
 	"sort"
 )
 
-type node struct {
+type Node struct {
 	/*
 	 * The payload array used to store the data (indexes) associated with this node.
 	 * In this case, it is used to store all property indexes.
 	 */
-	data []int
+	Data []int
 	/**
 	 * The set of edges starting from this node
 	 */
-	edges []*edge
+	Edges []*Edge
 	/**
 	 * The suffix link as described in Ukkonen's paper.
 	 * if str is the string denoted by the path from the root to this, this.suffix
 	 * is the node denoted by the path that corresponds to str without the first rune.
 	 */
-	suffix *node
+	Suffix *Node
 }
 
 /*
@@ -31,25 +31,25 @@ type node struct {
  * @param numElements the number of results to return. Use <=0 to get all
  * @return the first numElements associated to this node and children
  */
-func (n *node) getData(numElements int) (ret []int) {
+func (n *Node) getData(numElements int) (ret []int) {
 
 	if numElements > 0 {
-		if numElements > len(n.data) {
-			numElements -= len(n.data)
-			ret = n.data
+		if numElements > len(n.Data) {
+			numElements -= len(n.Data)
+			ret = n.Data
 		} else {
-			ret = n.data[:numElements]
+			ret = n.Data[:numElements]
 			return
 		}
 	} else {
-		ret = n.data
+		ret = n.Data
 	}
 
 	// need to get more matches from child nodes. This is what may waste time
-	for _, edge := range n.edges {
-		data := edge.node.getData(numElements)
+	for _, edge := range n.Edges {
+		Data := edge.Node.getData(numElements)
 	NEXTIDX:
-		for _, idx := range data {
+		for _, idx := range Data {
 			for _, v := range ret {
 				if v == idx {
 					continue NEXTIDX
@@ -71,58 +71,58 @@ func (n *node) getData(numElements int) (ret []int) {
 }
 
 // addRef adds the given index to the set of indexes associated with this
-func (n *node) addRef(index int) {
+func (n *Node) addRef(index int) {
 	if n.contains(index) {
 		return
 	}
 	n.addIndex(index)
 	// add this reference to all the suffixes as well
-	iter := n.suffix
+	iter := n.Suffix
 	for iter != nil {
 		if iter.contains(index) {
 			break
 		}
 		iter.addRef(index)
-		iter = iter.suffix
+		iter = iter.Suffix
 	}
 }
 
-func (n *node) contains(index int) bool {
-	i := sort.SearchInts(n.data, index)
-	return i < len(n.data) && n.data[i] == index
+func (n *Node) contains(index int) bool {
+	i := sort.SearchInts(n.Data, index)
+	return i < len(n.Data) && n.Data[i] == index
 }
 
-func (n *node) addEdge(r rune, e *edge) {
+func (n *Node) addEdge(r rune, e *Edge) {
 	if idx := n.search(r); idx == -1 {
-		n.edges = append(n.edges, e)
-		sort.Slice(n.edges, func(i, j int) bool { return n.edges[i].label[0] < n.edges[j].label[0] })
+		n.Edges = append(n.Edges, e)
+		sort.Slice(n.Edges, func(i, j int) bool { return n.Edges[i].label[0] < n.Edges[j].label[0] })
 	} else {
-		n.edges[idx] = e
+		n.Edges[idx] = e
 	}
 
 }
 
-func (n *node) getEdge(r rune) *edge {
+func (n *Node) getEdge(r rune) *Edge {
 	idx := n.search(r)
 	if idx < 0 {
 		return nil
 	}
-	return n.edges[idx]
+	return n.Edges[idx]
 }
 
-func (n *node) search(r rune) int {
-	idx := sort.Search(len(n.edges), func(i int) bool { return n.edges[i].label[0] >= r })
-	if idx < len(n.edges) && n.edges[idx].label[0] == r {
+func (n *Node) search(r rune) int {
+	idx := sort.Search(len(n.Edges), func(i int) bool { return n.Edges[i].label[0] >= r })
+	if idx < len(n.Edges) && n.Edges[idx].label[0] == r {
 		return idx
 	}
 
 	return -1
 }
 
-func (n *node) addIndex(idx int) {
-	n.data = append(n.data, idx)
+func (n *Node) addIndex(idx int) {
+	n.Data = append(n.Data, idx)
 }
 
-func newNode() *node {
-	return &node{}
+func newNode() *Node {
+	return &Node{}
 }
